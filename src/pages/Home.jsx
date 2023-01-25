@@ -1,5 +1,7 @@
 import axios from 'axios';
-import React, { useContext, useEffect, useState } from 'react';
+import qs from 'qs';
+import { useNavigate } from 'react-router-dom';
+import React, { useContext, useEffect, useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import Categories from '../components/Categories';
@@ -8,10 +10,15 @@ import PizzaBlock from '../components/PizzaBlock';
 import Skeleton from '../components/PizzaBlock/Skeleton';
 import Pagination from '../components/Pagination';
 import { SearchContext } from '../App';
-import { setCategoryId, setCurrentPage } from '../redux/slices/filterSlice';
+import { setCategoryId, setCurrentPage, setFilters } from '../redux/slices/filterSlice';
+import { sortList } from '../components/Sort';
 
 const Home = () => {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
+  const isSearch = useRef(false);
+  const isMounted = useRef(false);
+
   const { categoryId, sort, currentPage } = useSelector(state => state.filter);
   const sortType = sort.sortProperty;
 
@@ -27,7 +34,7 @@ const Home = () => {
     dispatch(setCurrentPage(number));
   };
 
-  useEffect(() => {
+  const fetchPizzas = () => {
     setIsLoading(true);
 
     const getItems = 'https://63cce64dfba6420d4d655b9d.mockapi.io/items';
@@ -44,7 +51,48 @@ const Home = () => {
         setItems(res.data);
         setIsLoading(false);
       });
+  };
+
+  // Если был первый рендер, то проверяем URL-параметры и сохраняем в Redux-е
+  useEffect(() => {
+    if (window.location.search) {
+      const params = qs.parse(window.location.search.substring(1));
+
+      const sort = sortList.find(obj => obj.sortProperty === params.sortProperty);
+
+      dispatch(
+        setFilters({
+          ...params,
+          sort,
+        }),
+      );
+      isSearch.current = true;
+    }
+  }, []);
+
+  // Если был первый рендер, то запрашиваем данные (пиццы)
+  useEffect(() => {
     window.scrollTo(0, 0);
+
+    if (!isSearch.current) {
+      fetchPizzas();
+    }
+
+    isSearch.current = false;
+  }, [categoryId, sortType, searchValue, currentPage]);
+
+  // Если изменили параметры и был первый рендер
+  useEffect(() => {
+    if (isMounted.current) {
+      const queryString = qs.stringify({
+        sortProperty: sort.sortProperty,
+        categoryId,
+        currentPage,
+      });
+
+      navigate(`?${queryString}`);
+    }
+    isMounted.current = true;
   }, [categoryId, sortType, searchValue, currentPage]);
 
   const pizzas = items.map(obj => <PizzaBlock key={obj.id} {...obj} />);
