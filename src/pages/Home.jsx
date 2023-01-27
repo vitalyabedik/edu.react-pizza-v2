@@ -1,5 +1,5 @@
 import qs from 'qs';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import React, { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -97,7 +97,11 @@ const Home = () => {
     isMounted.current = true;
   }, [categoryId, sortType, searchValue, currentPage]);
 
-  const pizzas = items.map(obj => <PizzaBlock key={obj.id} {...obj} />);
+  const pizzas = items.map(obj => (
+    <Link key={obj.id} to={`/pizza/${obj.id}`}>
+      <PizzaBlock {...obj} />
+    </Link>
+  ));
   const skeletons = [...new Array(6)].map((_, index) => <Skeleton key={index} />);
 
   return (
