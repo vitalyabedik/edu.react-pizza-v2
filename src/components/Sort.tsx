@@ -29,8 +29,8 @@ const Sort: React.FC = () => {
   };
 
   useEffect(() => {
-    const handleClickOutSide = (event: any) => {
-      if (!event.composedPath().includes(sortRef.current)) {
+    const handleClickOutSide = (event: MouseEvent) => {
+      if (sortRef.current && !event.composedPath().includes(sortRef.current)) {
         setOpen(false);
       }
     };
