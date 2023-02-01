@@ -4,11 +4,9 @@ import React, { useCallback, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 
 import { useAppDispatch } from '../redux/store';
-import Categories from '../components/Categories';
-import Sort from '../components/Sort';
-import PizzaBlock from '../components/PizzaBlock';
-import Skeleton from '../components/PizzaBlock/Skeleton';
-import Pagination from '../components/Pagination';
+
+import { Sort, Categories, PizzaBlock, Skeleton, Pagination } from '../components';
+
 import { sortList } from '../components/Sort';
 import { pizzaDataSelector } from '../redux/pizza/selectors';
 import { filterSelector } from '../redux/filter/selectors';
@@ -54,7 +52,7 @@ const Home: React.FC = () => {
     window.scrollTo(0, 0);
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     getPizzas();
   }, [categoryId, sort.sortProperty, searchValue, currentPage]);
 

@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
-import CartItem from '../components/CartItem';
-import CartEmpty from '../components/CartEmpty';
+
+import { CartItemBlock, CartEmpty } from '../components';
 import { cartSelector } from '../redux/cart/selectors';
 import { clearItems } from '../redux/cart/slice';
 
@@ -98,7 +98,7 @@ const Cart = () => {
         </div>
         <div className='content__items'>
           {items.map((item: any) => (
-            <CartItem key={item.id} {...item} />
+            <CartItemBlock key={item.id} {...item} />
           ))}
         </div>
         <div className='cart__bottom'>
